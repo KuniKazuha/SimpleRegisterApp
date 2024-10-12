@@ -1,0 +1,40 @@
+REGISTER:
+
+public class NotAMember extends AppCompatActivity {
+
+    EditText RegisterEmail, RegisterPassword;
+    Button RegisterButton;
+    TextView GotoLogin;
+    FirebaseAuth instance;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_not_amember);
+        RegisterEmail = findViewById(R.id.RegisterEmail);
+        RegisterPassword = findViewById(R.id.RegisterPassword);
+        RegisterButton = findViewById(R.id.RegisterButton);
+        GotoLogin = findViewById(R.id.GoToLogin);
+        instance = FirebaseAuth.getInstance();
+
+        GotoLogin.setOnClickListener(view -> {
+            startActivity(new Intent(NotAMember.this, MainActivity.class));
+        });
+        RegisterButton.setOnClickListener(view -> {
+            instance.createUserWithEmailAndPassword(RegisterEmail.getText().toString(), RegisterPassword.getText().toString()).addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    Toast.makeText(NotAMember.this,"Registration Successful!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(NotAMember.this, MainActivity.class));
+                }else{
+                    try {
+                        throw task.getException();
+                    } catch (FirebaseAuthUserCollisionException e){
+                        Toast.makeText(NotAMember.this,"Email is already taken!", Toast.LENGTH_LONG).show();
+                    } catch (Exception e){
+                        Toast.makeText(NotAMember.this,"An error occured!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        });
+    }
+}
