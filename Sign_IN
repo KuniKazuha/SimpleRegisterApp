@@ -1,0 +1,44 @@
+LOGIN:
+
+public class MainActivity extends AppCompatActivity {
+    EditText LoginEmail, LoginPassword;
+    Button LoginButton;
+    TextView GoToForgotPassword, GoToRegister;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        GoToForgotPassword = findViewById(R.id.GotToForgotPassword);
+        GoToRegister = findViewById(R.id.GoToRegister);
+        LoginEmail = findViewById(R.id.LoginEmail);
+        LoginPassword = findViewById(R.id.LoginPassword);
+        LoginButton = findViewById(R.id.LoginButton);
+        FirebaseAuth instance = FirebaseAuth.getInstance();
+
+        LoginButton.setOnClickListener(view -> {
+            instance.signInWithEmailAndPassword(LoginEmail.getText().toString(), LoginPassword.getText().toString()).addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                }else {
+                    try {
+                        throw task.getException();
+                    } catch (FirebaseAuthInvalidUserException e){
+                        Toast.makeText(MainActivity.this,"Invalid email address!", Toast.LENGTH_LONG).show();
+                    } catch (FirebaseAuthInvalidCredentialsException e){
+                        Toast.makeText(MainActivity.this,"Invalid password!", Toast.LENGTH_LONG).show();
+                    } catch (Exception e){
+                        Toast.makeText(MainActivity.this, "Invalid!", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        });
+        GoToForgotPassword.setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, ForgotPassword.class));
+        });
+        GoToRegister.setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, NotAMember.class));
+        });
+    }
+}
